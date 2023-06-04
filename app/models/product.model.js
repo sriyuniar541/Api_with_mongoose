@@ -3,6 +3,7 @@ module.exports = (mongoose) => {
     {
       name: String,
       price: Number,
+      photo: String,
     },
     {
       timestamps: true,

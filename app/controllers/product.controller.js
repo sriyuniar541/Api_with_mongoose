@@ -16,10 +16,24 @@ exports.findAll = (req, res) => {
 
 // insert data
 exports.create = (req, res) => {
-  const products = new Products({
+  let products = new Products({
     name: req.body.name,
     price: req.body.price,
   });
+  // insert singgle photo
+  // if (req.file) {
+  //   products.photo = req.file.path;
+  // }
+
+  //insert banyak photo
+  if (req.files) {
+    let path = "";
+    req.files.forEach(function (files, index, arr) {
+      path = path + files.path + ",";
+    });
+    path = path.substring(0, path.lastIndexOf(","));
+    products.photo = path;
+  }
 
   products
     .save(products)
