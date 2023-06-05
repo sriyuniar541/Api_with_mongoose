@@ -6,7 +6,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static('uploads'))
+app.use("/uploads", express.static("uploads"));
 
 const db = require("./app/models/index");
 db.mongoose
@@ -28,6 +28,11 @@ app.get("/", (req, res) => {
 });
 
 require("./app/routes/product.routes")(app);
+require("./app/routes/user.routes")(app);
+
+app.use("/*", (req, res) => {
+  res.json("Page not found..! ");
+});
 
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
