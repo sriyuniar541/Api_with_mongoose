@@ -1,3 +1,4 @@
+const validate_products = require("../helper/validation_products");
 const db = require("../models/index");
 const Products = db.products;
 
@@ -5,7 +6,10 @@ const Products = db.products;
 exports.findAll = (req, res) => {
   Products.find()
     .then((result) => {
-      res.send(result);
+      res.send({
+        message: "Get data success",
+        data: result,
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -16,10 +20,23 @@ exports.findAll = (req, res) => {
 
 // insert data
 exports.create = (req, res) => {
+  
+  //validasi data
+  const { error } = validate_products(req.body);
+  if (error) {
+    return res.status(400).send({
+      message: "error validation",
+      error: error.message,
+    });
+  }
+
+  let { name, price, count } = req.body;
   let products = new Products({
-    name: req.body.name,
-    price: req.body.price,
+    name,
+    price,
+    count,
   });
+
   // insert singgle photo
   // if (req.file) {
   //   products.photo = req.file.path;
@@ -38,7 +55,10 @@ exports.create = (req, res) => {
   products
     .save(products)
     .then((result) => {
-      res.send(result);
+      res.send({
+        message: "Insert data success",
+        data: result,
+      });
     })
     .catch((err) => {
       res.status(400).send({
@@ -53,7 +73,10 @@ exports.findOne = (req, res) => {
 
   Products.findById(id)
     .then((result) => {
-      res.send(result);
+      res.send({
+        message: "Get data success",
+        data: result,
+      });
     })
     .catch((err) => {
       res.status(400).send({
@@ -65,6 +88,21 @@ exports.findOne = (req, res) => {
 //update data
 exports.update = (req, res) => {
   const id = req.params.id;
+  let { name, price, count } = req.body;
+  let products = new Products({
+    name,
+    price,
+    count,
+  });
+
+  if (req.files) {
+    let path = "";
+    req.files.forEach(function (files, index, arr) {
+      path = path + files.path + ",";
+    });
+    path = path.substring(0, path.lastIndexOf(","));
+    products.photo = path;
+  }
 
   Products.findByIdAndUpdate(id, req.body)
     .then((result) => {

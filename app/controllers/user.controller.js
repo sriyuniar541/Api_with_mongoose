@@ -2,7 +2,7 @@ const bycript = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("../models/index");
 const joi = require("joi");
-const validate_register = require("../helper/validation");
+const validate_register = require("../helper/validation_register");
 const Users = db.users;
 
 exports.register = (req, res) => {
@@ -62,13 +62,14 @@ exports.register = (req, res) => {
 exports.login = (req, res) => {
   let email = req.body.email;
   let password = req.body.password;
+  const key_jwt = process.env.JWTKEY;
 
   Users.findOne({ $or: [{ email: email }, { phone_number: email }] })
     .then((user) => {
       if (user) {
         bycript.compare(password, user.password, function (err, result) {
           if (result) {
-            let token = jwt.sign({ name: user.name }, "jwt_token", {
+            let token = jwt.sign({ name: user.name }, key_jwt, {
               expiresIn: "1h",
             });
             res.send({
@@ -90,6 +91,22 @@ exports.login = (req, res) => {
     .catch((err) => {
       res.status(400).send({
         message: err.message || "Some error while login!",
+      });
+    });
+};
+
+exports.get_user_id = (req, res) => {
+  const id = req.params.id;
+  Users.findById(id)
+    .then((result) => {
+      res.send({
+        message: "Get data success",
+        data: result,
+      });
+    })
+    .catch((err) => {
+      res.status(400).send({
+        message: err.message || "Some error while get user!",
       });
     });
 };

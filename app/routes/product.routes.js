@@ -7,7 +7,7 @@ module.exports = (app) => {
   router.get("/:id", products.findOne);
   // router.post("/", upload.single("photo"), products.create); //uploas singgle photo
   router.post("/", upload.array("photo[]"), products.create); //uploas banyak photo
-  router.put("/:id", products.update);
+  router.put("/:id", upload.array("photo[]"), products.update);
   router.delete("/:id", products.delete);
 
   app.use("/api/products", router);

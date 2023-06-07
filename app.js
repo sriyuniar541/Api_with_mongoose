@@ -7,8 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static("uploads"));
+require("dotenv").config()
 
 const db = require("./app/models/index");
+const { config } = require("dotenv");
 db.mongoose
   .connect(db.url, {
     useNewUrlParser: true,
