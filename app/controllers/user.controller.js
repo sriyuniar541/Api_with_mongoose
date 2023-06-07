@@ -1,6 +1,8 @@
 const bycript = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("../models/index");
+const joi = require("joi");
+const validate_register = require("../helper/validation");
 const Users = db.users;
 
 exports.register = (req, res) => {
@@ -10,12 +12,25 @@ exports.register = (req, res) => {
         error: err,
       });
     }
+
+    //validasi register
+    const { error } = validate_register(req.body);
+    if (error) {
+      return res.status(400).send({
+        message: "error validation",
+        error: error.message,
+      });
+    }
+
+    const { name, email, phone_number, address } = req.body;
+
     let users = new Users({
-      name: req.body.name,
-      email: req.body.email,
+      name,
+      email,
       password: hashedPass,
-      phone_number: req.body.phone_number,
-      alamat: req.body.alamat,
+      confir_password: hashedPass,
+      phone_number,
+      address,
     });
 
     if (req.file) {
